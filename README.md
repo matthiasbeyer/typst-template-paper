@@ -12,6 +12,6 @@ and then only if I find it useful.
 
 MIT.
 
-See [./LICENSE].
+See [LICENSE].
 
 (c) 2024 Matthias Beyer
