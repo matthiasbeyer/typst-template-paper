@@ -1,0 +1,21 @@
+on:
+  pull_request:
+
+name: Pull Request Checks
+
+jobs:
+  commit-lint:
+    name: commit-lint
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4.2.1
+        with:
+          fetch-depth: 0
+      - uses: cachix/install-nix-action@v30
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+          extra_nix_config: |
+            extra-experimental-features = nix-command flakes
+      - run: nix shell -c gitlint --commits $(git merge-base origin/master HEAD)..HEAD
+
