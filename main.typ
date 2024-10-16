@@ -1,5 +1,8 @@
 #import "@preview/charged-ieee:0.1.2": ieee
 #import "@preview/cetz:0.2.2": canvas, draw, tree
+#import "@preview/gviz:0.1.0": *
+
+#show raw.where(lang: "dot-render"): it => render-image(it.text)
 
 #show: ieee.with(
   title: [A typesetting system to untangle the scientific writing process],
@@ -122,5 +125,44 @@ Or lets do the same thing in `Rust`:
 ```rust
 fn foo() -> () {
     println!("1")
+}
+```
+
+= Lets try some formulas
+
+$
+a = b_c * 2 \
+b_c = { f_o^2 in RR | f_o gt.eq.not a } \
+$
+
+
+
+$
+vec(1, 2, delim: "[") colon.eq "foo"
+sum_(k=0)^n k
+    &= 1 + ... + n \
+    &= (n(n+1)) / 2
+$
+
+We really love the math equations we can write in here, which is really a great
+thing, isn't it?
+
+$ frac(
+        frac(x^2, y^2 + 15y + 4),
+        frac(x^2^4, f(y))
+      )
+$
+
+= Some graphs again
+
+
+```dot-render
+digraph someshape {
+  node [shape=box];
+  A -> B;
+  B -> C;
+  C -> D;
+  C -> E;
+  A -> E;
 }
 ```
