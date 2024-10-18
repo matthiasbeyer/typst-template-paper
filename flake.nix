@@ -39,34 +39,45 @@
         src =
           let
             nixFilter = path: _type: !pkgs.lib.hasSuffix ".nix" path;
-            extraFiles = path: _type: !(builtins.any (n: pkgs.lib.hasSuffix n path) [ ".github" ".sh" ]);
-            filterPath = path: type: builtins.all (f: f path type) [
-              nixFilter
-              extraFiles
-              pkgs.lib.cleanSourceFilter
-            ];
+            extraFiles =
+              path: _type:
+              !(builtins.any (n: pkgs.lib.hasSuffix n path) [
+                ".github"
+                ".sh"
+              ]);
+            filterPath =
+              path: type:
+              builtins.all (f: f path type) [
+                nixFilter
+                extraFiles
+                pkgs.lib.cleanSourceFilter
+              ];
           in
           pkgs.lib.cleanSourceWith {
             src = ./.;
             filter = filterPath;
           };
 
-        commonArgs = {
-          typstSource = "main.typ";
+        commonArgs =
+          { typstSource }:
+          {
+            inherit
+              typstSource
+              ;
 
-          fontPaths = [
-            # Add paths to fonts here
-            "${pkgs.roboto}/share/fonts/truetype"
-          ];
+            fontPaths = [
+              # Add paths to fonts here
+              "${pkgs.roboto}/share/fonts/truetype"
+            ];
 
-          virtualPaths = [
-            # Add paths that must be locally accessible to typst here
-            {
-              dest = "icons";
-              src = "${inputs.font-awesome}/svgs/regular";
-            }
-          ];
-        };
+            virtualPaths = [
+              # Add paths that must be locally accessible to typst here
+              {
+                dest = "icons";
+                src = "${inputs.font-awesome}/svgs/regular";
+              }
+            ];
+          };
 
         typstPackagesSrc = pkgs.symlinkJoin {
           name = "typst-packages-src";
@@ -87,40 +98,53 @@
 
         # Compile a Typst project, *without* copying the result
         # to the current directory
-        build-drv = typixLib.buildTypstProject (
-          commonArgs
-          // {
-            inherit src;
+        build-drv =
+          { typstSource }:
+          typixLib.buildTypstProject (
+            (commonArgs { inherit typstSource; })
+            // {
+              inherit src;
 
-            XDG_CACHE_HOME = typstPackagesCache;
-          }
-        );
+              XDG_CACHE_HOME = typstPackagesCache;
+            }
+          );
 
         # Compile a Typst project, and then copy the result
         # to the current directory
-        build-script = typixLib.buildTypstProjectLocal (
-          commonArgs
-          // {
-            inherit src;
+        build-script =
+          { typstSource }:
+          typixLib.buildTypstProjectLocal (
+            (commonArgs { inherit typstSource; })
+            // {
+              inherit src;
 
-            XDG_CACHE_HOME = typstPackagesCache;
-          }
-        );
+              XDG_CACHE_HOME = typstPackagesCache;
+            }
+          );
 
         # Watch a project and recompile on changes
-        watch-script = typixLib.watchTypstProject commonArgs;
+        watch-script =
+          { typstSource }:
+          typixLib.watchTypstProject (commonArgs {
+            inherit typstSource;
+          });
+
+        paper-drv = build-drv { typstSource = "paper.typ"; };
+        paper-build = build-script { typstSource = "paper.typ"; };
+        paper-watch = watch-script { typstSource = "paper.typ"; };
       in
       {
         checks = {
           inherit
-            build-drv
-            build-script
-            watch-script
+            paper-build
+            paper-watch
             ;
         };
 
         packages = {
-          default = build-drv;
+          inherit
+            paper-drv
+            ;
 
           inherit
             typstPackagesSrc
@@ -128,16 +152,9 @@
             ;
         };
 
-        apps = rec {
-          default = watch;
-
-          build = flake-utils.lib.mkApp {
-            drv = build-script;
-          };
-
-          watch = flake-utils.lib.mkApp {
-            drv = watch-script;
-          };
+        apps = {
+          paper-build = flake-utils.lib.mkApp { drv = paper-build; };
+          paper-watch = flake-utils.lib.mkApp { drv = paper-watch; };
         };
 
         devShells.default = typixLib.devShell {
@@ -146,7 +163,6 @@
             # WARNING: Don't run `typst-build` directly, instead use `nix run .#build`
             # See https://github.com/loqusion/typix/issues/2
             # build-script
-            watch-script
             # More packages can be added here, like typstfmt
             pkgs.typstfmt
           ];
