@@ -58,25 +58,27 @@
             filter = filterPath;
           };
 
+        fontPaths = [
+          # Add paths to fonts here
+          "${pkgs.roboto}/share/fonts/truetype"
+        ];
+
+        virtualPaths = [
+          # Add paths that must be locally accessible to typst here
+          {
+            dest = "icons";
+            src = "${inputs.font-awesome}/svgs/regular";
+          }
+        ];
+
         commonArgs =
           { typstSource }:
           {
             inherit
               typstSource
+              fontPaths
+              virtualPaths
               ;
-
-            fontPaths = [
-              # Add paths to fonts here
-              "${pkgs.roboto}/share/fonts/truetype"
-            ];
-
-            virtualPaths = [
-              # Add paths that must be locally accessible to typst here
-              {
-                dest = "icons";
-                src = "${inputs.font-awesome}/svgs/regular";
-              }
-            ];
           };
 
         typstPackagesSrc = pkgs.symlinkJoin {
@@ -158,7 +160,7 @@
         };
 
         devShells.default = typixLib.devShell {
-          inherit (commonArgs) fontPaths virtualPaths;
+          inherit fontPaths virtualPaths;
           packages = [
             # WARNING: Don't run `typst-build` directly, instead use `nix run .#build`
             # See https://github.com/loqusion/typix/issues/2
