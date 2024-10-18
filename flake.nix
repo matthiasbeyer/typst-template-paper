@@ -135,9 +135,19 @@
         # Watch a project and recompile on changes
         watch-script =
           { typstSource }:
-          typixLib.watchTypstProject (commonArgs {
-            inherit typstSource;
-          });
+          pkgs.writeShellApplication {
+            name = "typst-watch";
+
+            text =
+              let
+                watch = typixLib.watchTypstProject (commonArgs {
+                  inherit typstSource;
+                });
+              in
+              ''
+                XDG_DATA_HOME="${typstPackagesCache}/" ${pkgs.lib.getExe watch}
+              '';
+          };
 
         paper-drv = build-drv { typstSource = "paper.typ"; };
         paper-build = build-script { typstSource = "paper.typ"; };
