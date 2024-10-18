@@ -20,6 +20,11 @@
       url = "github:typst/packages";
       flake = false;
     };
+
+    ttt = {
+      url = "github:matthiasbeyer/ttt";
+      flake = false;
+    };
   };
 
   outputs =
@@ -94,7 +99,10 @@
           dontBuild = true;
           installPhase = ''
             mkdir -p "$out/typst/packages"
-            cp -LR --reflink=auto --no-preserve=mode -t "$out/typst/packages" "$src"/*
+            cp -LR --reflink=auto --no-preserve=mode -t "$out/typst/packages" "${typstPackagesSrc}"/*
+
+            mkdir -p "$out/typst/packages/matthiasbeyer/ttt/0.1.0"
+            cp -LR --reflink=auto --no-preserve=mode -t "$out/typst/packages/matthiasbeyer/ttt/0.1.0" "${inputs.ttt}"/*
           '';
         };
 
@@ -134,18 +142,26 @@
         paper-drv = build-drv { typstSource = "paper.typ"; };
         paper-build = build-script { typstSource = "paper.typ"; };
         paper-watch = watch-script { typstSource = "paper.typ"; };
+
+        transcript-drv = build-drv { typstSource = "transcript.typ"; };
+        transcript-build = build-script { typstSource = "transcript.typ"; };
+        transcript-watch = watch-script { typstSource = "transcript.typ"; };
       in
       {
         checks = {
           inherit
             paper-build
             paper-watch
+
+            transcript-build
+            transcript-watch
             ;
         };
 
         packages = {
           inherit
             paper-drv
+            transcript-drv
             ;
 
           inherit
@@ -157,6 +173,8 @@
         apps = {
           paper-build = flake-utils.lib.mkApp { drv = paper-build; };
           paper-watch = flake-utils.lib.mkApp { drv = paper-watch; };
+          transcript-build = flake-utils.lib.mkApp { drv = transcript-build; };
+          transcript-watch = flake-utils.lib.mkApp { drv = transcript-watch; };
         };
 
         devShells.default = typixLib.devShell {

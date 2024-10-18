@@ -55,6 +55,7 @@
         "flake-utils": "flake-utils",
         "font-awesome": "font-awesome",
         "nixpkgs": "nixpkgs",
+        "ttt": "ttt",
         "typix": "typix",
         "typst-packages": "typst-packages"
       }
@@ -71,6 +72,22 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "ttt": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1729248134,
+        "narHash": "sha256-V5FFJxtbi3p9fHaZzyX1SRd3673GJOBhnxbaPtACfvk=",
+        "owner": "matthiasbeyer",
+        "repo": "ttt",
+        "rev": "84032cce6a593254bbac6602584f0b4a04cee64e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "matthiasbeyer",
+        "repo": "ttt",
         "type": "github"
       }
     },
