@@ -189,6 +189,14 @@
 
         devShells.default = typixLib.devShell {
           inherit fontPaths virtualPaths;
+
+          shellHook = ''
+            # We set the XDG_CACHE_HOME to the typstPackageCache, so we can
+            # compile in the nix-develop shell
+            echo >&2 "Setting XDG_CACHE_HOME"
+            export XDG_CACHE_HOME="${typstPackagesCache}"
+          '';
+
           packages = [
             # WARNING: Don't run `typst-build` directly, instead use `nix run .#build`
             # See https://github.com/loqusion/typix/issues/2
