@@ -166,3 +166,17 @@ digraph someshape {
   A -> E;
 }
 ```
+
+= Schroedinger-Gleichung
+
+$
+i planck.reduce frac(partial, partial t) Psi(r, t) = hat(H) Psi(r, t)
+$
+
+where:
+- $i$ the imaginary unit
+- $planck.reduce$ the reduced planck quantum of action
+- $Psi(r, t)$ the wave function
+- $hat(H)$ the hamilton operator
+
+
